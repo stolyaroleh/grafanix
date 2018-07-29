@@ -1,0 +1,19 @@
+{
+  "name": "grafanix",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-affjax": "latest",
+    "purescript-console": "latest",
+    "purescript-effect": "latest",
+    "purescript-halogen": "latest",
+    "purescript-prelude": "latest",
+    "purescript-simple-json": "latest"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^4.0.0"
+  }
+}

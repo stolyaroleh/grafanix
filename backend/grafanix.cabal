@@ -1,0 +1,45 @@
+name:                grafanix
+version:             0.1.0.0
+author:              Oleh Stolyar
+maintainer:          stolyar.oleh@gmail.com
+copyright:           2018 Oleh Stolyar
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable main
+  hs-source-dirs:       src
+  main-is:              Main.hs
+  default-language:     Haskell2010
+  other-modules:        Config
+                      , Nix
+                      , Parser
+                      , Types
+  build-depends:        base >= 4.7 && < 5
+                      , aeson
+                      , attoparsec
+                      , bytestring
+                      , containers
+                      , dhall
+                      , errors
+                      , hashable
+                      , lrucaching
+                      , protolude
+                      , re2
+                      , scotty
+                      , text
+                      , typed-process
+                      , wai-middleware-static
+  default-extensions:   DuplicateRecordFields
+                      , DeriveGeneric
+                      , FlexibleContexts
+                      , GeneralizedNewtypeDeriving
+                      , NoImplicitPrelude
+                      , MultiParamTypeClasses
+                      , OverloadedStrings
+                      , RecordWildCards
+                      , ScopedTypeVariables
+                      , StandaloneDeriving
+                      , TupleSections
+                      , TypeApplications
+  ghc-options:        -threaded -rtsopts -with-rtsopts=-N -O2 -Wall

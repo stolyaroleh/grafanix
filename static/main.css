@@ -1,0 +1,71 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+.parent {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.header {
+  background-color: #FAFAFA;
+  border-bottom: 1px solid rgba(136, 136, 136, 0.2);
+  padding: 20px 30px;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+}
+
+.controls .name {
+  margin-right: 10px;
+}
+
+.controls input {
+  height: 20px;
+  outline: none;
+}
+
+.controls input[type="text"] {
+  border-color: rgba(136, 136, 136, 0.2);
+  border-width: 1px;
+  padding: 3px;
+  margin: 0;
+}
+
+.controls input[type="radio"] {
+  padding: 0;
+  margin: 8px;
+}
+
+.controls #submit {
+  height: 28px;
+  background-color: #999999;
+  color: white;
+  border-color: rgba(136, 136, 136, 0.2);
+  border-width: 1px 1px 1px 0;
+  border-style: solid;
+  padding: 0 8px;
+  outline: none;
+}
+
+.controls #submit:hover, .controls #submit:active {
+  background-color: #777777;
+  cursor: pointer;
+}
+
+#vis {
+  display: flex;
+  flex: 1 1 auto;
+  font: 10px sans-serif;
+  margin: 30px;
+}
+
+svg {
+  display: flex;
+  flex: 1 1 auto;
+}
