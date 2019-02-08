@@ -5,7 +5,7 @@
 mkDerivation {
   pname = "grafanix";
   version = "0.1.0.0";
-  src = ./.;
+  src = stdenv.lib.cleanSource ../.;
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
