@@ -2,6 +2,7 @@ name:                grafanix
 version:             0.1.0.0
 author:              Oleh Stolyar
 maintainer:          stolyar.oleh@gmail.com
+license:             MIT
 copyright:           2018 Oleh Stolyar
 category:            Web
 build-type:          Simple

@@ -12,7 +12,7 @@ import           Control.Error                  ( Script
 import           Data.Attoparsec.Text           ( Parser
                                                 , parseOnly
                                                 )
-import qualified Data.ByteString.Lazy as L
+import qualified Data.ByteString.Lazy          as L
 import           Data.Hashable                  ( Hashable )
 import           Data.IORef                     ( atomicModifyIORef )
 import           Data.LruCache                  ( insert
@@ -21,14 +21,12 @@ import           Data.LruCache                  ( insert
 import           Data.LruCache.IO               ( LruHandle(..) )
 import           Data.Tree                      ( Tree(..) )
 import           Data.Text                      ( isSuffixOf
-                                                , strip
                                                 , unwords
                                                 )
 import           Regex.RE2                      ( compile
                                                 , replaceAll
                                                 )
 
-import           System.Environment             ( getEnv )
 import           System.Process.Typed
 import           Protolude
 
@@ -43,11 +41,10 @@ decolor str = fst $ replaceAll colors str ""
 run :: Text -> [Text] -> Script ByteString
 run cmd args = do
   putText cmdline
-  let
-    procConfig = setStdin closed
-               $ setStdout byteStringOutput
-               $ setStderr closed
-               $ proc (toS cmd) (map toS args)
+  let procConfig =
+        setStdin closed $ setStdout byteStringOutput $ setStderr closed $ proc
+          (toS cmd)
+          (map toS args)
   (exitCode, out, err) <- readProcess procConfig
   if exitCode == ExitSuccess
     then do
@@ -61,8 +58,8 @@ run cmd args = do
 cached
   :: (Hashable k, Ord k) => LruHandle k v -> (k -> Script v) -> k -> Script v
 cached (LruHandle ref) script k = do
-  cachedValue <-
-    scriptIO $ atomicModifyIORef ref $ \cache -> case lookup k cache of
+  cachedValue <- scriptIO $ atomicModifyIORef ref $ \cache ->
+    case lookup k cache of
       Nothing          -> (cache, Nothing)
       Just (v, cache') -> (cache', Just v)
   case cachedValue of
@@ -80,7 +77,7 @@ parse parser text = case parseOnly parser text of
 drvPath :: Text -> App Text
 drvPath pkgName = do
   nixpkgs <- asks (nixpkgsPath . config)
-  out <- lift $ run "nix-instantiate" [nixpkgs, "--attr", pkgName]
+  out     <- lift $ run "nix-instantiate" [nixpkgs, "--attr", pkgName]
   lift $ parse Parser.nixPath (toS out)
 
 pkgPath :: Text -> App Text
@@ -99,9 +96,7 @@ whyDepends (src, dest) = do
   out <- run "nix" ["why-depends", toS src, toS dest]
   parse Parser.whyDepends (toS out)
 
-depTree
-  :: Text
-  -> App DepTree
+depTree :: Text -> App DepTree
 depTree path = do
   out      <- lift $ run "nix-store" ["--query", "--tree", toS path]
   pathTree <- lift $ parse Parser.depTree (toS out)
@@ -112,8 +107,8 @@ depTree path = do
 
   mkNodes :: Maybe Text -> Tree Text -> App (Tree Dep)
   mkNodes parent Node {..} = do
-    duCache <- asks duCache
-    whyCache <- asks whyCache
+    duCache     <- asks duCache
+    whyCache    <- asks whyCache
     size        <- lift $ cached duCache sizeBytes rootLabel
     (sha, name) <- lift $ parse Parser.hashAndName (toS rootLabel)
     why         <- if buildDeps
@@ -123,4 +118,4 @@ depTree path = do
         Just p  -> lift $ cached whyCache whyDepends (p, rootLabel)
 
     children <- mapM (mkNodes (Just rootLabel)) subForest
-    return Node {rootLabel = Dep {..}, subForest = children}
+    return Node { rootLabel = Dep { .. }, subForest = children }
