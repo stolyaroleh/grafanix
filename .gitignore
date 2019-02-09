@@ -1,5 +1,11 @@
-.psci_modules
-.stack-work
-bower_components
-output
+backend/dist
+backend/dist-newstyle
+backend/cabal.*
+backend/.ghc.environment.*
+
+frontend/.psci_modules
+frontend/.pulp-cache
+frontend/bower_components
+frontend/output
+
 result
