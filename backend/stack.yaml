@@ -1,7 +1,0 @@
-resolver: lts-11.16
-packages:
-- .
-extra-deps: []
-nix:
-  enable: true
-  shell-file: default.nix
