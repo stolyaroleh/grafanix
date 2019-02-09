@@ -1,18 +1,40 @@
-{ pkgs ? import <nixpkgs> {} }:
 let
-  backend = import ./backend { inherit pkgs; };
-  frontend = import ./frontend { inherit pkgs; };
-  static = import ./static { inherit pkgs; };
+  haskellCompiler = "ghc844";
+
+  config = {
+    packageOverrides = pkgs: rec {
+      haskell = pkgs.haskell // {
+        packages = pkgs.haskell.packages // {
+          "${haskellCompiler}" = pkgs.haskell.packages.${haskellCompiler}.override {
+            overrides = new: old: {
+              hies = new.callPackage ./nix/hies.nix {};
+              purescript = new.callPackage ./nix/purescript.nix {};
+            };
+          };
+        };
+      };
+
+      haskellPkgs = haskell.packages.${haskellCompiler};
+      grafanix-backend =
+        haskellPkgs.callPackage ./nix/grafanix-backend.nix {};
+      grafanix-frontend = pkgs.callPackage ./nix/grafanix-frontend.nix {
+        inherit (haskellPkgs) purescript;
+      };
+      grafanix = pkgs.callPackage ./nix/grafanix.nix {};
+    };
+  };
+
+  pkgs = import ./nixpkgs.nix { inherit config; };
 in
-  with pkgs;
-  runCommand "grafanix" {} ''
-    mkdir -p $out/static
-    cp -r ${static}/* $out/static
-    cp ${frontend}/main.js $out/static
-    cp ${backend}/bin/main $out
-    echo '{ nixpkgsPath = "${<nixpkgs>}"' >> $out/config.dhall
-    echo ", staticPath = \"$out/static\"" >> $out/config.dhall
-    echo ', duCacheSize = 2048' >> $out/config.dhall
-    echo ', whyCacheSize = 512' >> $out/config.dhall
-    echo '}' >> $out/config.dhall
-  ''
+  rec {
+    backend = pkgs.grafanix-backend;
+    frontend = pkgs.grafanix-frontend;
+    grafanix = pkgs.grafanix;
+
+    buildTools = with pkgs.haskellPkgs; [
+      hies.hie84
+      cabal2nix
+      cabal-install
+      hoogle
+    ] ++ frontend.buildInputs;
+  }

@@ -3,9 +3,14 @@
 , stdenv, text, typed-process, wai-middleware-static
 }:
 mkDerivation {
-  pname = "grafanix";
+  pname = "grafanix-backend";
   version = "0.1.0.0";
-  src = stdenv.lib.cleanSource ../.;
+  src = stdenv.lib.sourceByRegex ../backend [
+    "src"
+    "src/.*\.hs"
+    "grafanix\.cabal"
+    "Setup\.hs"
+  ];
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
