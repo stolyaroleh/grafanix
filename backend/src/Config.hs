@@ -2,7 +2,7 @@ module Config
   (Config(..), readConfig)
 where
 
-import Dhall (Interpret, auto, detailed, input)
+import Dhall (Interpret, auto, input)
 import GHC.Generics
 import Protolude
 
@@ -16,4 +16,4 @@ data Config = Config
 instance Interpret Config
 
 readConfig :: FilePath -> IO Config
-readConfig file = detailed (input auto (toS file))
+readConfig file = input auto (toS file)
