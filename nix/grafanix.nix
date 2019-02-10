@@ -16,7 +16,7 @@
     cp ${grafanix-backend}/bin/grafanix $out
 
     cat <<EOF > $out/config.dhall
-    { nixpkgsPath = "${<nixpkgs>}"
+    { nixpkgsPath = "<nixpkgs>"
     , staticPath = "$out/static"
     , duCacheSize = +2048
     , whyCacheSize = +512

@@ -7,12 +7,13 @@ let
         packages = pkgs.haskell.packages // {
           "${haskellCompiler}" = pkgs.haskell.packages.${haskellCompiler}.override {
             overrides = new: old: {
-              hies = new.callPackage ./nix/hies.nix {};
               purescript = new.callPackage ./nix/purescript.nix {};
             };
           };
         };
       };
+
+      hies = pkgs.callPackage ./nix/hies.nix {};
 
       haskellPkgs = haskell.packages.${haskellCompiler};
       grafanix-backend =
@@ -31,10 +32,10 @@ in
     frontend = pkgs.grafanix-frontend;
     grafanix = pkgs.grafanix;
 
-    buildTools = with pkgs.haskellPkgs; [
+    buildTools = with pkgs; [
       hies.hie84
-      cabal2nix
-      cabal-install
-      hoogle
+      haskellPkgs.cabal2nix
+      haskellPkgs.cabal-install
+      haskellPkgs.hoogle
     ] ++ frontend.buildInputs;
   }
