@@ -1,4 +1,4 @@
-module SessionStorage 
+module SessionStorage
   ( getItem
   , setItem
   , removeItem

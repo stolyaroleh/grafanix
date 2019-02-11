@@ -11,7 +11,8 @@
     "purescript-effect": "latest",
     "purescript-halogen": "latest",
     "purescript-prelude": "latest",
-    "purescript-simple-json": "latest"
+    "purescript-simple-json": "latest",
+    "purescript-aff": "latest"
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0"

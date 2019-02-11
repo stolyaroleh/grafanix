@@ -61,6 +61,6 @@ cabal new-run grafanix  # Run it
 ```bash
 cd frontend
 
-bower install
-pulp build -O --to ../static/main.js  # Build it
+bower install  # Fetch dependencies
+pulp --watch build --to ../static/main.js  # Rebuild on every change
 ```

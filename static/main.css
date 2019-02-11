@@ -13,7 +13,8 @@ body {
 .header {
   background-color: #FAFAFA;
   border-bottom: 1px solid rgba(136, 136, 136, 0.2);
-  padding: 20px 30px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .controls {
@@ -56,6 +57,11 @@ body {
 .controls #submit:hover, .controls #submit:active {
   background-color: #777777;
   cursor: pointer;
+}
+
+.group {
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 #vis {
