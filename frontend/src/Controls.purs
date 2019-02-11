@@ -101,7 +101,7 @@ controls =
                     [ type_ InputRadio
                     , name "size"
                     , checked (state.sizeFunc == Count)
-                    , HE.onClick $ HE.input_ (SizeFuncInput ClosureSize)
+                    , HE.onClick $ HE.input_ (SizeFuncInput Count)
                     ]
                   , label
                     [ for "size" ]
@@ -110,7 +110,7 @@ controls =
                     [ type_ InputRadio
                     , name "size"
                     , checked (state.sizeFunc == ClosureSize)
-                    , HE.onClick $ HE.input_ (SizeFuncInput Count)
+                    , HE.onClick $ HE.input_ (SizeFuncInput ClosureSize)
                     ]
                   , label
                     [ for "size" ]
@@ -138,11 +138,11 @@ controls =
       ClosureInput value next -> do
         state <- H.get
         H.put $ state { closureType = value }
-        pure next
+        eval $ Submit next
       SizeFuncInput value next -> do
         state <- H.get
         H.put $ state { sizeFunc = value }
-        pure next
+        eval $ Submit next
       RestoreState next -> do
         newState <- H.liftEffect $ SessionStorage.getItem "ui_state"
         case readJSON <$> newState of
