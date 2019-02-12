@@ -33,18 +33,18 @@ function drawSunburst(divId, useSize) {
     );
   }
 
-  function title(d) {
-    if (d.parent === null) {
+  function title(node) {
+    if (node.parent === null) {
       return (
-        `${d.data.name} (${prettySize(d.data.size)})\n` +
-        `closure: ${prettySize(closureSize(d.data))}\n\n`
+        `${node.data.name} (${prettySize(node.data.size)})\n` +
+        `closure: ${prettySize(node.data.closureSize)}\n\n`
       );
     }
     return (
-      `${d.parent.data.name} depends on ${d.data.name}\n\n` +
-      `size: ${prettySize(d.data.size)}\n` +
-      `closure: ${prettySize(closureSize(d.data))}\n\n` +
-      `${d.data.why.map(prettyWhy).join()}`
+      `${node.parent.data.name} depends on ${node.data.name}\n\n` +
+      `size: ${prettySize(node.data.size)}\n` +
+      `closure: ${prettySize(node.data.closureSize)}\n\n` +
+      `${node.data.why.map(prettyWhy).join()}`
     );
   }
 
@@ -55,52 +55,25 @@ function drawSunburst(divId, useSize) {
     return str.substr(0, maxLabelChars - 3) + '...';
   }
 
-  const closureSize = d => {
-    return d.size + d.children.reduce((a, b) => a + closureSize(b), 0);
-  };
-
-  // Given a node, compute:
-  // 0. Its subtree size.
-  // 1. Its closure size.
-  // ..using a postorder traversal.
-  function preprocess(node) {
+  // Compute closure size relative to siblings
+  function assignSize(node, sumOfSiblings) {
+    const parentValue = node.parent ? node.parent.value : 1;
+    node.value = node.data.closureSize / sumOfSiblings * parentValue;
     if (node.children) {
-      node.subtreeSize = 0;
-    } else {
-      node.subtreeSize = 1;
+      const sumOfChildren = node.children.reduce((total, n) => total + n.data.closureSize, 0);
+      node.children.forEach(n => assignSize(n, sumOfChildren));
     }
-    node.closureSize = node.data.size;
-    if (node.children) {
-      node.subtreeSize += node.children.reduce((total, n) => total + n.subtreeSize, 0);
-      node.closureSize += node.children.reduce((total, n) => total + n.closureSize, 0);
-    }
-  }
-
-  // Given a node, either use its subtree size
-  // or compute closure size, relative to siblings,
-  // using a preorder traversal.
-  function assignValues(node) {
-    if (!useSize) {
-      node.value = node.subtreeSize;
-      return;
-    }
-
-    // Compute size, relative to siblings
-    if (node.depth == 0) {
-      node.value = 1;
-      return;
-    }
-
-    const siblingClosureSize = node.parent.closureSize - node.parent.data.size;
-    node.value = (node.closureSize / siblingClosureSize) * node.parent.value;
   }
 
   const partition = data => {
     // Preprocess
-    const root = d3.hierarchy(data)
-      .eachAfter(preprocess)
-      .eachBefore(assignValues)
-      .sort((a, b) => b.value - a.value);
+    const root = d3.hierarchy(data);
+    if (useSize) {
+      assignSize(root, root.data.closureSize);
+    } else {
+      root.count();
+    }
+    root.sort((a, b) => b.value - a.value);
     // Layout
     return d3.partition()
       .size([2 * Math.PI, root.height + 1])
@@ -132,11 +105,7 @@ function drawSunburst(divId, useSize) {
         .enter()
           .append("path")
             .attr("fill",
-                  d => {
-                    // Color arcs based on parent position
-                    while (d.depth > 1) d = d.parent;
-                    return color(d.data.name);
-                  })
+                  d => color(d.data.name))
             .attr("fill-opacity",
                   d => arcVisible(d.current)
                         ? (d.children ? 0.6 : 0.4)

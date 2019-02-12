@@ -1,10 +1,13 @@
 module Parser where
 
+import           Control.Monad                  ( fail )
 import           Data.Attoparsec.Text
 import           Data.Char
-import           Data.Tree
+import qualified Data.Map                      as M
 import qualified Data.Text                     as T
 import           Protolude               hiding ( hash
+                                                , takeWhile
+                                                , try
                                                 )
 import           Types
 
@@ -14,55 +17,56 @@ parseEither parser text = case parseOnly parser text of
   Right a   -> Right a
   Left  err -> Left $ toS err
 
-
 restOfLine :: Parser ()
 restOfLine = takeTill isEndOfLine *> endOfLine
 
+legalNixHashChar :: Char -> Bool
+legalNixHashChar = inClass "a-zA-Z0-9"
 
-nixPath :: Parser Text
-nixPath = do
-  store <- string "/nix/store"
-  rest  <- takeTill isSpace
-  return $ store <> rest
+legalNixFileNameChar :: Char -> Bool
+legalNixFileNameChar = inClass "a-zA-Z0-9+._-"
 
-
--- "/nix/store/2kcrj1ksd2a14bm5sky182fv2xwfhfap-glibc-2.26-131"
--- -> ("2kcrj1ksd2a14bm5sky182fv2xwfhfap", "glibc-2.26-131")
 hashAndName :: Parser (Text, Text)
 hashAndName = do
   _    <- string "/nix/store/"
-  hash <- takeTill (== '-')
+  hash <- takeWhile legalNixHashChar
+  when (T.length hash /= 32) $ fail "failed to parse hash"
   _    <- char '-'
-  name <- takeTill isSpace
+  name <- takeWhile legalNixFileNameChar
   return (hash, name)
 
+nixPath :: Parser Text
+nixPath = do
+  (hash, name) <- hashAndName
+  return $ "/nix/store/" <> hash <> "-" <> name
 
--- Given the output of `nix-store --query --tree`,
+quoted :: Parser a -> Parser a
+quoted p = char '"' *> p <* char '"'
+
+-- Given the output of `nix-store --query --graph`,
 -- produce a tree of Nix store paths
-depTree :: Parser (Tree Text)
+depTree :: Parser DepTree
 depTree = do
-  (_, rootLabel) <- node
-  subForest      <- makeForest <$> many node
-  return Node {..}
+  _     <- string "digraph G {" *> restOfLine
+  edges <- many (dotEdge <|> dotNode)
+  _     <- string "}"
+  return $ foldl build M.empty edges
  where
-  node :: Parser (Int, Text)
-  node = do
-    indent <- takeTill (== '/')
-    label  <- takeWhile1 (not . isSpace) <* restOfLine
-    let level = T.length indent `div` 4
-    return (level, label)
+  build :: DepTree -> (Text, [Text]) -> DepTree
+  build acc (from, to) = M.insertWith (++) from to acc
 
-  makeForest :: [(Int, Text)] -> [Tree Text]
-  makeForest [] = []
-  makeForest ((level, label) : xs) =
-    let
-      (children, rest) = break (\(x, _) -> x <= level) xs
-    in
-      case children of
-        [] -> []
-        _ -> [ Node {rootLabel = label, subForest = makeForest children} ]
-        ++ makeForest rest
+dotNode :: Parser (Text, [Text])
+dotNode = do
+  name <- quoted nixPath <* string " [" <* restOfLine
+  return (name, [])
 
+dotEdge :: Parser (Text, [Text])
+dotEdge = do
+  to   <- quoted nixPath
+  _    <- string " -> "
+  from <- quoted nixPath
+  _    <- restOfLine
+  return (from, [to])
 
 -- Given the output of `nix why-depends --all $from $to`,
 -- produce a list of reasons why `from` directly depends on `to`.
@@ -74,18 +78,26 @@ whyDepends = do
   restOfLine
   many why
  where
-    -- `filepath:…reason…` => Why
+  -- `filepath:…reason…` => Why
   why :: Parser Why
   why = do
     skipWhile isIndent
     file   <- takeTill (== ':') <* takeTill (== '…') <* char '…'
     reason <- takeTill (== '…')
     restOfLine
-    return Why {..}
+    return Why { .. }
 
   isIndent :: Char -> Bool
   isIndent c = c == ' ' || c == '║' || c == '╠' || c == '╚' || c == '═'
 
-
-size :: Parser Int
-size = decimal
+-- Given the output of `nix path-info --size --closure-size $path`,
+-- get size and closure size
+sizeAndClosureSize :: Parser (Int, Int)
+sizeAndClosureSize = do
+  _ <- nixPath
+  skipSpace
+  size <- decimal
+  skipSpace
+  closureSize <- decimal
+  restOfLine
+  return (size, closureSize)

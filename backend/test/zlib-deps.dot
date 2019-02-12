@@ -1,0 +1,5 @@
+digraph G {
+"/nix/store/3lpg9gcwllklvcncc31v5lpqma7ymx5g-zlib-1.2.11" [label = "zlib-1.2.11", shape = box, style = filled, fillcolor = "#ff0000"];
+"/nix/store/a0d6q18gxggcvb5x24nrdg6nvhbnipnb-glibc-2.27" -> "/nix/store/3lpg9gcwllklvcncc31v5lpqma7ymx5g-zlib-1.2.11" [color = "black"];
+"/nix/store/a0d6q18gxggcvb5x24nrdg6nvhbnipnb-glibc-2.27" [label = "glibc-2.27", shape = box, style = filled, fillcolor = "#ff0000"];
+}

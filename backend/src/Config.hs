@@ -1,10 +1,15 @@
 module Config
-  (Config(..), readConfig)
+  ( Config(..)
+  , readConfig
+  )
 where
 
-import Dhall (Interpret, auto, input)
-import GHC.Generics
-import Protolude
+import           Dhall                          ( Interpret
+                                                , auto
+                                                , input
+                                                )
+import           GHC.Generics
+import           Protolude
 
 data Config = Config
   { nixpkgsPath :: Text
