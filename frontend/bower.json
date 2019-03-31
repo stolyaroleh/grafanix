@@ -16,5 +16,13 @@
   },
   "devDependencies": {
     "purescript-psci-support": "^4.0.0"
+  },
+  "resolutions": {
+    "purescript-typelevel-prelude": "^4.0.0",
+    "purescript-foreign-object": "^2.0.0",
+    "purescript-record": "^2.0.0",
+    "purescript-web-file": "^2.0.0",
+    "purescript-web-dom": "^2.0.0",
+    "purescript-web-events": "^2.0.0"
   }
 }
