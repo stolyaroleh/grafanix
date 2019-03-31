@@ -20,6 +20,7 @@ body {
 .controls {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .controls .name {
