@@ -2,7 +2,7 @@ module Controls where
 
 import Affjax (get) as AX
 import Affjax.ResponseFormat (string) as AX
-import D3 (drawSunburst)
+import D3 (drawGraph)
 import Data.Either (Either(..))
 import Data.Maybe (Maybe(..))
 import Effect.Aff (Aff)
@@ -13,7 +13,7 @@ import Halogen.HTML.Properties (InputType(..), checked, class_, for, id_, name, 
 import Prelude (type (~>), Unit, Void, bind, const, discard, pure, unit, ($), (<$>), (<>), (==))
 import SessionStorage as SessionStorage
 import Simple.JSON (readJSON, writeJSON)
-import Types (ClosureType(..), SizeFunc(..), UIState)
+import Types (ClosureType(..), UIState)
 import Web.Event.Event (preventDefault, Event)
 
 -- Queries change state of a component
@@ -23,7 +23,6 @@ data Query a =
   -- Inputs changed
   PackageValueInput String a |
   ClosureInput ClosureType a |
-  SizeFuncInput SizeFunc a |
   -- Page just loaded, read state from session storage and redraw last plot
   RestoreState a |
   -- Refresh plot
@@ -35,7 +34,6 @@ controls =
     { initialState: const
       { packageName: ""
       , closureType: Runtime
-      , sizeFunc: Count
       }
     , render
     , eval
@@ -92,31 +90,6 @@ controls =
                     [ text "Build" ]
                   ]
                 ]
-              , div
-                [ class_ $ ClassName "group" ]
-                [ text "Arc width"
-                , div
-                  []
-                  [ input
-                    [ type_ InputRadio
-                    , name "size"
-                    , checked (state.sizeFunc == Count)
-                    , HE.onClick $ HE.input_ (SizeFuncInput Count)
-                    ]
-                  , label
-                    [ for "size" ]
-                    [ text "Subtree size" ]
-                  , input
-                    [ type_ InputRadio
-                    , name "size"
-                    , checked (state.sizeFunc == ClosureSize)
-                    , HE.onClick $ HE.input_ (SizeFuncInput ClosureSize)
-                    ]
-                  , label
-                    [ for "size" ]
-                    [ text "Closure size" ]
-                  ]
-                ]
               ]
             ]
           ]
@@ -138,10 +111,6 @@ controls =
       ClosureInput value next -> do
         state <- H.get
         H.put $ state { closureType = value }
-        eval $ Submit next
-      SizeFuncInput value next -> do
-        state <- H.get
-        H.put $ state { sizeFunc = value }
         eval $ Submit next
       RestoreState next -> do
         newState <- H.liftEffect $ SessionStorage.getItem "ui_state"
@@ -167,5 +136,5 @@ controls =
             Left err -> pure unit
             Right body -> do
               SessionStorage.setItem "data" body
-              drawSunburst "vis" (state.sizeFunc == ClosureSize)
+              drawGraph "vis"
         pure next

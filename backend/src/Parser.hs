@@ -3,8 +3,10 @@ module Parser where
 import           Control.Monad                  ( fail )
 import           Data.Attoparsec.Text
 import           Data.Char
-import qualified Data.Map                      as M
-import qualified Data.Text                     as T
+import           Data.Maybe
+import qualified Data.Map.Strict               as Map
+import qualified Data.Vector                   as Vector
+import qualified Data.Text                     as Text
 import           Protolude               hiding ( hash
                                                 , takeWhile
                                                 , try
@@ -24,13 +26,13 @@ legalNixHashChar :: Char -> Bool
 legalNixHashChar = inClass "a-zA-Z0-9"
 
 legalNixFileNameChar :: Char -> Bool
-legalNixFileNameChar = inClass "a-zA-Z0-9+._-"
+legalNixFileNameChar = inClass "a-zA-Z0-9+.?=_-"
 
 hashAndName :: Parser (Text, Text)
 hashAndName = do
   _    <- string "/nix/store/"
   hash <- takeWhile legalNixHashChar
-  when (T.length hash /= 32) $ fail "failed to parse hash"
+  when (Text.length hash /= 32) $ fail "failed to parse hash"
   _    <- char '-'
   name <- takeWhile legalNixFileNameChar
   return (hash, name)
@@ -43,30 +45,38 @@ nixPath = do
 quoted :: Parser a -> Parser a
 quoted p = char '"' *> p <* char '"'
 
--- Given the output of `nix-store --query --graph`,
--- produce a tree of Nix store paths
-depTree :: Parser DepTree
-depTree = do
-  _     <- string "digraph G {" *> restOfLine
-  edges <- many (dotEdge <|> dotNode)
-  _     <- string "}"
-  return $ foldl build M.empty edges
- where
-  build :: DepTree -> (Text, [Text]) -> DepTree
-  build acc (from, to) = M.insertWith (++) from to acc
+-- Parse the output of `nix-store --query --graph`,
+depGraph :: Parser DepGraph
+depGraph = do
+  _            <- string "digraph G {" *> restOfLine
+  edgesOrNodes <- many (dotEdge <|> dotNode)
+  _            <- string "}"
+  let
+    (n, e) =
+      Vector.partition (isNothing . snd) . Vector.fromList $ edgesOrNodes
+    nodes = Vector.map fst n
 
-dotNode :: Parser (Text, [Text])
+    addOne (numSoFar, acc) name = (numSoFar + 1, Map.insert name numSoFar acc)
+    (_, index) = Vector.foldl addOne (0, Map.empty) nodes
+
+    mkEdge (source, Just target) =
+      Just (index Map.! source, index Map.! target)
+    mkEdge _ = Nothing
+    edges = Vector.map fromJust . Vector.filter isJust . Vector.map mkEdge $ e
+  return $ DepGraph { .. }
+
+dotNode :: Parser (Text, Maybe Text)
 dotNode = do
   name <- quoted nixPath <* string " [" <* restOfLine
-  return (name, [])
+  return (name, Nothing)
 
-dotEdge :: Parser (Text, [Text])
+dotEdge :: Parser (Text, Maybe Text)
 dotEdge = do
   to   <- quoted nixPath
   _    <- string " -> "
   from <- quoted nixPath
   _    <- restOfLine
-  return (from, [to])
+  return (from, Just to)
 
 -- Given the output of `nix why-depends --all $from $to`,
 -- produce a list of reasons why `from` directly depends on `to`.

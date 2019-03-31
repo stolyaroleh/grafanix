@@ -2,9 +2,9 @@ module D3 where
 
 import Data.Unit (Unit)
 import Effect (Effect)
-import Effect.Uncurried (EffectFn2, runEffectFn2)
+import Effect.Uncurried (EffectFn1, runEffectFn1)
 
-foreign import drawSunburstImpl :: EffectFn2 String Boolean Unit
+foreign import drawGraphImpl :: EffectFn1 String Unit
 
-drawSunburst :: String -> Boolean -> Effect Unit
-drawSunburst = runEffectFn2 drawSunburstImpl
+drawGraph :: String -> Effect Unit
+drawGraph = runEffectFn1 drawGraphImpl

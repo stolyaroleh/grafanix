@@ -38,6 +38,6 @@ main = do
       describe "dotEdge" $
         it "can parse a DOT edge" $
           dotEdge `shouldSucceedOn` edgeDot
-      describe "depTree" $
+      describe "depGraph" $
         it "can parse zlib dependencies DOT" $
-          depTree `shouldSucceedOn` zlibDepsDot
+          depGraph `shouldSucceedOn` zlibDepsDot

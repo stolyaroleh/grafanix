@@ -1,2 +1,2 @@
 "use strict";
-exports.drawSunburstImpl = drawSunburst;
+exports.drawGraphImpl = drawGraph;

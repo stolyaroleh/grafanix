@@ -3,8 +3,9 @@ module Types
   , Env(..)
   , Dep(..)
   , Why(..)
-  , DepTree
+  , DepGraph(..)
   , DepInfo
+  , emptyGraph
   , depsToJson
   , makeEnv
   , runApp
@@ -17,13 +18,14 @@ import           Data.Aeson                     ( ToJSON
                                                 , object
                                                 , toJSON
                                                 )
-import           Data.Map                       ( Map
-                                                , (!?)
-                                                , findWithDefault
-                                                )
+import           Data.Maybe
+import qualified Data.Map                      as Map
+import           Data.Map                       ( Map )
 import           Data.LruCache.IO               ( LruHandle
                                                 , newLruHandle
                                                 )
+import           Data.Vector                    ( Vector )
+import qualified Data.Vector                   as Vector
 import           GHC.Generics
 import           Protolude
 
@@ -58,7 +60,7 @@ data Dep = Dep
   , size :: Int
   , closureSize :: Int
   , why :: [Why]
-  } deriving (Eq, Show, Generic)
+  } deriving (Eq, Show)
 
 -- A reason why a node depends on its parent
 data Why = Why
@@ -69,17 +71,37 @@ data Why = Why
 instance ToJSON Why
 
 type DepInfo = Map Text Dep
-type DepTree = Map Text [Text]
+data DepGraph = DepGraph
+  { nodes :: Vector Text
+  , edges :: Vector (Int, Int)
+  } deriving (Show)
 
-depsToJson :: DepTree -> DepInfo -> Text -> Maybe Value
-depsToJson depTree depInfo rootName = do
-  Dep {..} <- depInfo !? rootName
-  let childrenNames = findWithDefault [] rootName depTree
-  return $ object
-    [ ("name"       , toJSON name)
-    , ("sha"        , toJSON sha)
-    , ("size"       , toJSON size)
-    , ("closureSize", toJSON closureSize)
-    , ("why"        , toJSON why)
-    , ("children", toJSON $ mapM (depsToJson depTree depInfo) childrenNames)
-    ]
+emptyGraph :: DepGraph
+emptyGraph = DepGraph { nodes = Vector.empty, edges = Vector.empty }
+
+depsToJson :: DepGraph -> DepInfo -> Value
+depsToJson graph depInfo =
+  let catMaybes = Vector.map fromJust . Vector.filter isJust
+  in  object
+        [ ("nodes", toJSON . catMaybes . Vector.map mkNode $ nodes graph)
+        , ("links", toJSON . catMaybes . Vector.map mkLink $ edges graph)
+        ]
+ where
+  mkNode :: Text -> Maybe Value
+  mkNode n = do
+    Dep {..} <- depInfo Map.!? n
+    return $ object
+      [ ("name"       , toJSON name)
+      , ("size"       , toJSON size)
+      , ("sha"        , toJSON sha)
+      , ("closureSize", toJSON closureSize)
+      ]
+  mkLink :: (Int, Int) -> Maybe Value
+  mkLink (sourceIndex, targetIndex) = do
+    source <- nodes graph Vector.!? sourceIndex
+    info   <- depInfo Map.!? source
+    return $ object
+      [ ("source", toJSON sourceIndex)
+      , ("target", toJSON targetIndex)
+      , ("why"   , toJSON $ why info)
+      ]

@@ -1,6 +1,23 @@
-{ mkDerivation, aeson, attoparsec, base, bytestring, containers
-, dhall, errors, hashable, hspec, hspec-attoparsec, lrucaching, protolude, scotty
-, stdenv, text, typed-process, wai-middleware-static
+{ mkDerivation
+, stdenv
+
+, aeson
+, attoparsec
+, base
+, bytestring
+, containers
+, dhall
+, errors
+, hashable
+, hspec
+, hspec-attoparsec
+, lrucaching
+, protolude
+, scotty
+, text
+, typed-process
+, vector
+, wai-middleware-static
 }:
 mkDerivation {
   pname = "grafanix-backend";
@@ -16,11 +33,25 @@ mkDerivation {
     "grafanix\.cabal"
     "Setup\.hs"
   ];
-  isLibrary = false;
+
   isExecutable = true;
+  enableSharedLibraries = false;
+
   executableHaskellDepends = [
-    aeson attoparsec base bytestring containers dhall errors hashable
-    lrucaching protolude scotty text typed-process
+    aeson
+    attoparsec
+    base
+    bytestring
+    containers
+    dhall
+    errors
+    hashable
+    lrucaching
+    protolude
+    scotty
+    text
+    typed-process
+    vector
     wai-middleware-static
   ];
   testHaskellDepends = [ base hspec hspec-attoparsec ];

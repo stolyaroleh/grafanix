@@ -68,10 +68,22 @@ body {
   display: flex;
   flex: 1 1 auto;
   font: 10px sans-serif;
-  margin: 30px;
 }
 
 svg {
   display: flex;
   flex: 1 1 auto;
+}
+
+.link {
+  stroke-width: 3px;
+  stroke-opacity: 0.4;
+}
+
+.node_label_bg {
+  fill-opacity: 0.9;
+}
+
+.node_label {
+  text-anchor: middle;
 }

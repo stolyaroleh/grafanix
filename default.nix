@@ -28,6 +28,8 @@ let
   pkgs = import ./nixpkgs.nix { inherit config; };
 in
   rec {
+    inherit pkgs;
+
     backend = pkgs.grafanix-backend;
     frontend = pkgs.grafanix-frontend;
     grafanix = pkgs.grafanix;

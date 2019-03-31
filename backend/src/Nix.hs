@@ -1,7 +1,7 @@
 module Nix
   ( drvPath
   , pkgPath
-  , depTree
+  , depGraph
   )
 where
 
@@ -11,14 +11,16 @@ import           Control.Error                  ( Script
 import           Data.Attoparsec.Text           ( Parser
                                                 , parseOnly
                                                 )
-import qualified Data.ByteString.Lazy          as L
+import qualified Data.ByteString.Lazy.Char8    as ByteString.Lazy
+import qualified Data.ByteString.Lazy.Builder  as ByteString.Builder
 import           Data.Hashable                  ( Hashable )
 import           Data.IORef                     ( atomicModifyIORef )
 import           Data.LruCache                  ( insert
                                                 , lookup
                                                 )
 import           Data.LruCache.IO               ( LruHandle(..) )
-import qualified Data.Map                      as M
+import qualified Data.Map                      as Map
+import qualified Data.Vector                   as Vector
 import           Data.Text                      ( isSuffixOf
                                                 , unwords
                                                 )
@@ -30,7 +32,29 @@ import           Config
 import qualified Parser
 import           Types
 
-run :: Text -> [Text] -> Script ByteString
+decolor :: ByteString.Lazy.ByteString -> ByteString.Lazy.ByteString
+decolor = ByteString.Builder.toLazyByteString . go mempty
+ where
+  go
+    :: ByteString.Builder.Builder
+    -> ByteString.Lazy.ByteString
+    -> ByteString.Builder.Builder
+  go acc "" = acc
+  go acc string =
+    let esc                = '\x1b'
+        colorSequenceStart = "\x1b["
+        (text, colored)    = ByteString.Lazy.span (/= esc) string
+        -- Attempt to strip a color sequence
+        rest = case ByteString.Lazy.stripPrefix colorSequenceStart colored of
+          Just x ->
+            -- All color sequences look like this: ESC[#(;#)m
+            ByteString.Lazy.drop 1 . ByteString.Lazy.dropWhile (/= 'm') $ x
+          Nothing ->
+            -- Just skip ESC otherwise
+            ByteString.Lazy.dropWhile (== esc) colored
+    in  go (acc <> ByteString.Builder.lazyByteString text) rest
+
+run :: Text -> [Text] -> Script Text
 run cmd args = do
   putText cmdline
   let procConfig =
@@ -39,7 +63,7 @@ run cmd args = do
           (map toS args)
   (exitCode, out, err) <- readProcess procConfig
   if exitCode == ExitSuccess
-    then return $ L.toStrict out
+    then return . toS $ decolor out
     else
       let message = "Command '" <> cmdline <> "' failed with:\n" <> toS err
       in  throwError message
@@ -68,43 +92,43 @@ drvPath :: Text -> App Text
 drvPath pkgName = do
   nixpkgs <- asks (nixpkgsPath . config)
   out     <- lift $ run "nix-instantiate" [nixpkgs, "--attr", pkgName]
-  lift $ parse Parser.nixPath (toS out)
+  lift $ parse Parser.nixPath out
 
 pkgPath :: Text -> App Text
 pkgPath pkgName = do
   nixpkgs <- asks (nixpkgsPath . config)
   out <- lift $ run "nix-build" [nixpkgs, "--attr", pkgName, "--no-out-link"]
-  lift $ parse Parser.nixPath (toS out)
+  lift $ parse Parser.nixPath out
 
 sizeAndClosureSize :: Text -> Script (Int, Int)
 sizeAndClosureSize path = do
   out <- run "nix" ["path-info", "--size", "--closure-size", path]
-  parse Parser.sizeAndClosureSize (toS out)
+  parse Parser.sizeAndClosureSize out
 
 whyDepends :: (Text, Text) -> Script [Why]
 whyDepends (src, dest) = do
-  out <- run "nix" ["why-depends", toS src, toS dest]
-  parse Parser.whyDepends (toS out)
+  out <- run "nix" ["why-depends", src, dest]
+  parse Parser.whyDepends out
 
-depTree :: Text -> App (DepTree, DepInfo)
-depTree path = do
-  out  <- lift $ run "nix-store" ["--query", "--graph", toS path]
-  tree <- lift $ parse Parser.depTree (toS out)
-  let depNames = M.keys tree
+depGraph :: Text -> App (DepGraph, DepInfo)
+depGraph path = do
+  out   <- lift $ run "nix-store" ["--query", "--graph", path]
+  graph <- lift $ parse Parser.depGraph out
+  let depNames = nodes graph
   depInfos <- mapM (getInfo path) depNames
-  let info = M.fromList (zip depNames depInfos)
-  return (tree, info)
+  let info = Map.fromList . Vector.toList $ Vector.zip depNames depInfos
+  return (graph, info)
  where
   getInfo :: Text -> Text -> App Dep
   getInfo parent child = do
     sizeCache           <- asks sizeCache
     whyCache            <- asks whyCache
     (size, closureSize) <- lift $ cached sizeCache sizeAndClosureSize child
-    (sha , name       ) <- lift $ parse Parser.hashAndName (toS child)
+    (sha , name       ) <- lift $ parse Parser.hashAndName child
     why                 <- if buildDeps
       then return []
       else lift $ cached whyCache whyDepends (parent, child)
     return Dep { .. }
 
   buildDeps :: Bool
-  buildDeps = ".drv" `isSuffixOf` toS path
+  buildDeps = ".drv" `isSuffixOf` path

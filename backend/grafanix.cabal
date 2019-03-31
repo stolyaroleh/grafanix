@@ -27,6 +27,7 @@ library grafanix-internal
                       , protolude
                       , text
                       , typed-process
+                      , vector
 
   default-language:     Haskell2010
   default-extensions:   DuplicateRecordFields
