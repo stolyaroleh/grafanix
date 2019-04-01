@@ -10,7 +10,6 @@ import Prelude hiding (readFile)
 
 main :: IO ()
 main = do
-  zlibDepsDot <- readFile "./test/zlib-deps.dot"
   nodeDot <- readFile "./test/node.dot"
   edgeDot <- readFile "./test/edge.dot"
   hspec $
@@ -35,9 +34,11 @@ main = do
           dotNode `shouldSucceedOn` nodeDot
         it "fails on a DOT edge" $
           dotNode `shouldFailOn` edgeDot
-      describe "dotEdge" $
+      describe "dotEdge" $ do
         it "can parse a DOT edge" $
           dotEdge `shouldSucceedOn` edgeDot
+        it "fails on a DOT node" $
+          dotEdge `shouldFailOn` nodeDot
       describe "depGraph" $
         it "can parse zlib dependencies DOT" $
-          depGraph `shouldSucceedOn` zlibDepsDot
+          (depGraph `shouldSucceedOn`) =<< readFile "./test/zlib-deps.dot"

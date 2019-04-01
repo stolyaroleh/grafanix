@@ -5,6 +5,7 @@ import           Data.Attoparsec.Text
 import           Data.Char
 import           Data.Maybe
 import qualified Data.Map.Strict               as Map
+import           Data.Vector                   (Vector)
 import qualified Data.Vector                   as Vector
 import qualified Data.Text                     as Text
 import           Protolude               hiding ( hash
@@ -83,10 +84,14 @@ dotEdge = do
 -- The output of `why-depends` will print the shortest paths first,
 -- which is why we only need to parse the first level of indentation until
 -- the first "=> "
-whyDepends :: Parser [Why]
+whyDepends :: Parser (Vector Why)
 whyDepends = do
-  restOfLine
-  many why
+  _ <- nixPath *> string "\n"
+  whys <- choice
+    [ why `manyTill` arrow
+    , return []
+    ]
+  return $ Vector.fromList whys
  where
   -- `filepath:…reason…` => Why
   why :: Parser Why
@@ -99,6 +104,12 @@ whyDepends = do
 
   isIndent :: Char -> Bool
   isIndent c = c == ' ' || c == '║' || c == '╠' || c == '╚' || c == '═'
+
+  arrow :: Parser ()
+  arrow = do
+    skipWhile isIndent
+    _ <- string "=> "
+    restOfLine
 
 -- Given the output of `nix path-info --size --closure-size $path`,
 -- get size and closure size

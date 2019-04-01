@@ -35,12 +35,12 @@ main = do
     middleware $ staticPolicy (addBase . toS $ staticPath config)
     get "/" $ file . toS $ staticPath config <> "/index.html"
     get "/deps/:packageName/" $ do
-      pkgName             <- param "packageName"
-      pkgPath             <- safeIO $ runApp env $ Nix.pkgPath pkgName
-      (depGraph, depInfo) <- safeIO $ runApp env $ Nix.depGraph pkgPath
-      json $ depsToJson depGraph depInfo
+      pkgName                  <- param "packageName"
+      pkgPath                  <- safeIO $ runApp env $ Nix.pkgPath pkgName
+      (graph, infoMap, whyMap) <- safeIO $ runApp env $ Nix.depGraph pkgPath
+      json $ depsToJson graph infoMap whyMap
     get "/build-deps/:packageName" $ do
-      pkgName             <- param "packageName"
-      pkgPath             <- safeIO $ runApp env $ Nix.drvPath pkgName
-      (depGraph, depInfo) <- safeIO $ runApp env $ Nix.depGraph pkgPath
-      json $ depsToJson depGraph depInfo
+      pkgName                  <- param "packageName"
+      pkgPath                  <- safeIO $ runApp env $ Nix.drvPath pkgName
+      (graph, infoMap, whyMap) <- safeIO $ runApp env $ Nix.depGraph pkgPath
+      json $ depsToJson graph infoMap whyMap

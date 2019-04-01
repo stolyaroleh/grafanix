@@ -1,10 +1,9 @@
 module Types
   ( App
   , Env(..)
-  , Dep(..)
+  , Info(..)
   , Why(..)
   , DepGraph(..)
-  , DepInfo
   , emptyGraph
   , depsToJson
   , makeEnv
@@ -44,7 +43,7 @@ data Env = Env
     -- Cache storing sizes and closure sizes.
   , sizeCache :: LruHandle Text (Int, Int)
     -- Cache storing reasons why there is a dependency between two store paths (src, dest).
-  , whyCache :: LruHandle (Text, Text) [Why]
+  , whyCache :: LruHandle (Text, Text) (Vector Why)
   }
 
 makeEnv :: Config -> IO Env
@@ -54,12 +53,11 @@ makeEnv config = do
   return Env { .. }
 
 -- A node in a dependency tree
-data Dep = Dep
+data Info = Info
   { name :: Text
   , sha :: Text
   , size :: Int
   , closureSize :: Int
-  , why :: [Why]
   } deriving (Eq, Show)
 
 -- A reason why a node depends on its parent
@@ -70,7 +68,6 @@ data Why = Why
 
 instance ToJSON Why
 
-type DepInfo = Map Text Dep
 data DepGraph = DepGraph
   { nodes :: Vector Text
   , edges :: Vector (Int, Int)
@@ -79,17 +76,17 @@ data DepGraph = DepGraph
 emptyGraph :: DepGraph
 emptyGraph = DepGraph { nodes = Vector.empty, edges = Vector.empty }
 
-depsToJson :: DepGraph -> DepInfo -> Value
-depsToJson graph depInfo =
+depsToJson :: DepGraph -> Map Int Info -> Map (Int, Int) (Vector Why)-> Value
+depsToJson graph infos whys =
   let catMaybes = Vector.map fromJust . Vector.filter isJust
   in  object
-        [ ("nodes", toJSON . catMaybes . Vector.map mkNode $ nodes graph)
+        [ ("nodes", toJSON . catMaybes . Vector.imap mkNode $ nodes graph)
         , ("links", toJSON . catMaybes . Vector.map mkLink $ edges graph)
         ]
  where
-  mkNode :: Text -> Maybe Value
-  mkNode n = do
-    Dep {..} <- depInfo Map.!? n
+  mkNode :: Int -> Text -> Maybe Value
+  mkNode n _ = do
+    Info {..} <- infos Map.!? n
     return $ object
       [ ("name"       , toJSON name)
       , ("size"       , toJSON size)
@@ -98,10 +95,9 @@ depsToJson graph depInfo =
       ]
   mkLink :: (Int, Int) -> Maybe Value
   mkLink (sourceIndex, targetIndex) = do
-    source <- nodes graph Vector.!? sourceIndex
-    info   <- depInfo Map.!? source
+    why    <- whys Map.!? (sourceIndex, targetIndex)
     return $ object
       [ ("source", toJSON sourceIndex)
       , ("target", toJSON targetIndex)
-      , ("why"   , toJSON $ why info)
+      , ("why"   , toJSON why)
       ]

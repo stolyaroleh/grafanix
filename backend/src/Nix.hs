@@ -19,12 +19,11 @@ import           Data.LruCache                  ( insert
                                                 , lookup
                                                 )
 import           Data.LruCache.IO               ( LruHandle(..) )
+import           Data.Map                       ( Map )
 import qualified Data.Map                      as Map
+import           Data.Vector                    ( Vector )
 import qualified Data.Vector                   as Vector
-import           Data.Text                      ( isSuffixOf
-                                                , unwords
-                                                )
-
+import qualified Data.Text                     as Text
 import           System.Process.Typed
 import           Protolude
 
@@ -67,7 +66,7 @@ run cmd args = do
     else
       let message = "Command '" <> cmdline <> "' failed with:\n" <> toS err
       in  throwError message
-  where cmdline = cmd <> " " <> unwords args
+  where cmdline = cmd <> " " <> Text.unwords args
 
 cached
   :: (Hashable k, Ord k) => LruHandle k v -> (k -> Script v) -> k -> Script v
@@ -105,30 +104,35 @@ sizeAndClosureSize path = do
   out <- run "nix" ["path-info", "--size", "--closure-size", path]
   parse Parser.sizeAndClosureSize out
 
-whyDepends :: (Text, Text) -> Script [Why]
+whyDepends :: (Text, Text) -> Script (Vector Why)
 whyDepends (src, dest) = do
-  out <- run "nix" ["why-depends", src, dest]
+  out <- run "nix" ["why-depends", "--all", src, dest]
   parse Parser.whyDepends out
 
-depGraph :: Text -> App (DepGraph, DepInfo)
+info :: Text -> App Info
+info path = do
+  sizeCache           <- asks sizeCache
+  (size, closureSize) <- lift $ cached sizeCache sizeAndClosureSize path
+  (sha , name       ) <- lift $ parse Parser.hashAndName path
+  return Info {..}
+
+depGraph :: Text -> App (DepGraph, Map Int Info, Map (Int, Int) (Vector Why))
 depGraph path = do
   out   <- lift $ run "nix-store" ["--query", "--graph", path]
   graph <- lift $ parse Parser.depGraph out
-  let depNames = nodes graph
-  depInfos <- mapM (getInfo path) depNames
-  let info = Map.fromList . Vector.toList $ Vector.zip depNames depInfos
-  return (graph, info)
+  let DepGraph {..} = graph
+  infoVector <- mapM info nodes
+  let infoMap = vectorToMap . Vector.indexed $ infoVector
+  let textEdge (srcIndex, destIndex) = (nodes Vector.! srcIndex, nodes Vector.! destIndex)
+      textEdges = Vector.map textEdge edges
+  whyVector <- mapM getWhy textEdges
+  let whyMap = vectorToMap $ Vector.zip edges whyVector
+  return (graph, infoMap, whyMap)
  where
-  getInfo :: Text -> Text -> App Dep
-  getInfo parent child = do
-    sizeCache           <- asks sizeCache
-    whyCache            <- asks whyCache
-    (size, closureSize) <- lift $ cached sizeCache sizeAndClosureSize child
-    (sha , name       ) <- lift $ parse Parser.hashAndName child
-    why                 <- if buildDeps
-      then return []
-      else lift $ cached whyCache whyDepends (parent, child)
-    return Dep { .. }
+  vectorToMap :: Ord a => Vector (a, b) -> Map a b
+  vectorToMap = Map.fromList . Vector.toList
 
-  buildDeps :: Bool
-  buildDeps = ".drv" `isSuffixOf` path
+  getWhy :: (Text, Text) -> App (Vector Why)
+  getWhy (src, dest) = do
+    whyCache            <- asks whyCache
+    lift $ cached whyCache whyDepends (src, dest)
