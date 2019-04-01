@@ -1,6 +1,5 @@
+{ haskellCompiler ? "ghc844" }:
 let
-  haskellCompiler = "ghc844";
-
   config = {
     packageOverrides = pkgs: rec {
       haskell = pkgs.haskell // {

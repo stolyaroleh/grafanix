@@ -9,7 +9,7 @@ function prettySize(bytes) {
 function prettyWhy(why) {
   return (
     `${why.file} contains:\n` +
-    `"${why.reason}"\n`
+    `"${why.reason}"`
   );
 }
 
@@ -30,7 +30,7 @@ function nodeTitle(d) {
 function linkTitle(d) {
   return (
     `${d.source.name} depends on ${d.target.name}\n\n` +
-    `${d.why.map(prettyWhy).join()}`
+    `${d.why.map(prettyWhy).join('\n')}`
   );
 }
 
@@ -113,8 +113,6 @@ function drawGraph(divId) {
       .attr('fill', d => color(d.name))
       .attr('x', d => -0.2 * d.name.length * radius(d.size))
       .attr('y', d => -0.5 * radius(d.size))
-      .attr('rx', 0.1)
-      .attr('ry', 0.1)
       .attr('width', d => d.name.length * 0.4 * radius(d.size))
       .attr('height', d => radius(d.size))
       .on("click", clicked);

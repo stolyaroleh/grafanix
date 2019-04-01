@@ -8,7 +8,10 @@ exports.getItemImpl = function (just, nothing, key) {
   return just(item);
 };
 exports.setItemImpl = function (key, item) {
-  window.sessionStorage.setItem(key, item);
+  try {
+    window.sessionStorage.setItem(key, item);
+  }
+  catch (DOMException) {}  // Item is too big
 }
 exports.removeItemImpl = function (key) {
   window.sessionStorage.removeItem(key);
