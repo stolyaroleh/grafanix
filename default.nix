@@ -1,42 +1,37 @@
-{ haskellCompiler ? "ghc844" }:
+{ haskellCompiler ? "ghc864" }:
 let
   config = {
     packageOverrides = pkgs: rec {
-      haskell = pkgs.haskell // {
-        packages = pkgs.haskell.packages // {
-          "${haskellCompiler}" = pkgs.haskell.packages.${haskellCompiler}.override {
-            overrides = new: old: {
-              purescript = new.callPackage ./nix/purescript.nix {};
-            };
-          };
-        };
-      };
-
-      hies = pkgs.callPackage ./nix/hies.nix {};
-
-      haskellPkgs = haskell.packages.${haskellCompiler};
       grafanix-backend =
-        haskellPkgs.callPackage ./nix/grafanix-backend.nix {};
+        pkgs.haskell.packages.${haskellCompiler}.callPackage ./nix/grafanix-backend.nix {};
       grafanix-frontend = pkgs.callPackage ./nix/grafanix-frontend.nix {
-        inherit (haskellPkgs) purescript;
+        purescript = easyPS.inputs.purs;
       };
       grafanix = pkgs.callPackage ./nix/grafanix.nix {};
     };
   };
 
-  pkgs = import ./nixpkgs.nix { inherit config; };
+  sources = import ./nix/sources.nix;
+  pkgs = import sources.nixpkgs { inherit config; };
+  niv = (import sources.niv { inherit pkgs; }).niv;
+  hies = pkgs.callPackage ./nix/hies.nix {};
+  easyPS = import sources.easy-purescript-nix;
 in
   rec {
-    inherit pkgs;
-
     backend = pkgs.grafanix-backend;
     frontend = pkgs.grafanix-frontend;
     grafanix = pkgs.grafanix;
 
     buildTools = with pkgs; [
-      hies.hie84
-      haskellPkgs.cabal2nix
-      haskellPkgs.cabal-install
-      haskellPkgs.hoogle
+      hies.hie86
+      haskellPackages.cabal2nix
+      haskellPackages.cabal-install
+      haskellPackages.hoogle
+      niv
     ] ++ frontend.buildInputs;
+
+    shell =
+      pkgs.haskell.lib.addBuildTools
+      backend
+      buildTools;
   }

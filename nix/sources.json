@@ -1,0 +1,37 @@
+{
+    "nixpkgs": {
+        "url": "https://github.com/NixOS/nixpkgs-channels/archive/7bb74e653654dbf9206e751574b5132b15f46bb5.tar.gz",
+        "owner": "NixOS",
+        "branch": "nixos-19.03",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "nixpkgs-channels",
+        "type": "tarball",
+        "sha256": "1dbdy4f58yqz4l67n032184rx7ci94hx3wl52c8h2bg06awkzq87",
+        "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
+        "rev": "7bb74e653654dbf9206e751574b5132b15f46bb5"
+    },
+    "easy-purescript-nix": {
+        "homepage": "",
+        "url": "https://github.com/justinwoo/easy-purescript-nix/archive/bad807ade1314420a52c589dbc3d64d3c9b38480.tar.gz",
+        "owner": "justinwoo",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "easy-purescript-nix",
+        "type": "tarball",
+        "sha256": "099dpxrpch8cgy310svrpdcad2y1qdl6l782mjpcgn3rqgj62vsf",
+        "description": "Easy PureScript (and other tools) with Nix",
+        "rev": "bad807ade1314420a52c589dbc3d64d3c9b38480"
+    },
+    "niv": {
+        "homepage": "https://github.com/nmattia/niv",
+        "url": "https://github.com/nmattia/niv/archive/5d9e3a5f7d51765f0369a4682770ec57d863f19f.tar.gz",
+        "owner": "nmattia",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "niv",
+        "type": "tarball",
+        "sha256": "0x7d2rb89h0h7g8sjsgax6ncvf2wwbmxkgvlfi53d00kxj6kfzba",
+        "description": "Easy dependency management for Nix projects",
+        "rev": "5d9e3a5f7d51765f0369a4682770ec57d863f19f"
+    }
+}
