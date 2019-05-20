@@ -14,7 +14,7 @@ let
   sources = import ./nix/sources.nix;
   pkgs = import sources.nixpkgs { inherit config; };
   niv = (import sources.niv { inherit pkgs; }).niv;
-  hies = pkgs.callPackage ./nix/hies.nix {};
+  hie = (import sources.all-hies {}).versions."${haskellCompiler}";
   easyPS = import sources.easy-purescript-nix;
 in
   rec {
@@ -23,7 +23,7 @@ in
     grafanix = pkgs.grafanix;
 
     buildTools = with pkgs; [
-      hies.hie86
+      hie
       haskellPackages.cabal2nix
       haskellPackages.cabal-install
       haskellPackages.hoogle

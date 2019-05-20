@@ -10,6 +10,18 @@
         "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
         "rev": "7bb74e653654dbf9206e751574b5132b15f46bb5"
     },
+    "all-hies": {
+        "homepage": "",
+        "url": "https://github.com/Infinisil/all-hies/archive/777b6665c1671feaa3c3eb74d10dd6f79ec1302c.tar.gz",
+        "owner": "Infinisil",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "all-hies",
+        "type": "tarball",
+        "sha256": "03py0j4d6asrxmp1170n5sywsa2y1pw0xr51r2f1digfg5ryrw98",
+        "description": "Cached Haskell IDE Engine Nix builds for all GHC versions",
+        "rev": "777b6665c1671feaa3c3eb74d10dd6f79ec1302c"
+    },
     "easy-purescript-nix": {
         "homepage": "",
         "url": "https://github.com/justinwoo/easy-purescript-nix/archive/bad807ade1314420a52c589dbc3d64d3c9b38480.tar.gz",
