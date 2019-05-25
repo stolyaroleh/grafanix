@@ -88,15 +88,15 @@ parse parser text = case parseOnly parser text of
   Left  err -> throwError . toS $ err
 
 drvPath :: Text -> App Text
-drvPath pkgName = do
+drvPath pkgExpr = do
   nixpkgs <- asks (nixpkgsPath . config)
-  out     <- lift $ run "nix-instantiate" [nixpkgs, "--attr", pkgName]
+  out     <- lift $ run "nix-instantiate" ["--expr", "with import " <> nixpkgs <> " {}; " <> pkgExpr]
   lift $ parse Parser.nixPath out
 
 pkgPath :: Text -> App Text
-pkgPath pkgName = do
+pkgPath pkgExpr = do
   nixpkgs <- asks (nixpkgsPath . config)
-  out <- lift $ run "nix-build" [nixpkgs, "--attr", pkgName, "--no-out-link"]
+  out <- lift $ run "nix-build" ["--expr", "with import " <> nixpkgs <> " {}; " <> pkgExpr, "--no-out-link"]
   lift $ parse Parser.nixPath out
 
 sizeAndClosureSize :: Text -> Script (Int, Int)

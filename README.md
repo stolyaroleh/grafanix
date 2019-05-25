@@ -12,20 +12,9 @@ nix-build --attr grafanix --option build-use-sandbox false
 
 ## Running
 
-Grafanix expects a config file `config.dhall` in the directory you start it from.
-You can start it directly from the Nix store:
-
 ```bash
-cd ./result
-./grafanix  # will use <nixpkgs>
-```
-
-..or from a different location with a modified config:
-
-```bash
-cp ./result/config.dhall .
-vim config.dhall  # edit default configuration
-./result/grafanix
+./result/bin/grafanix --help # show available options
+./result/bin/grafanix        # start Grafanix, use <nixpkgs>
 ```
 
 After starting Grafanix, open `localhost:3000` in your browser:
@@ -51,9 +40,9 @@ nix-shell --command "code"
 ```bash
 cd backend
 
-cabal new-build         # Build it
-cabal new-repl          # Start a REPL
-cabal new-run grafanix  # Run it
+cabal new-build                                   # Build it
+cabal new-repl                                    # Start a REPL
+cabal new-run grafanix --static-path="../static"  # Run it, serve static assets from project directory
 ```
 
 ### Frontend
@@ -61,6 +50,6 @@ cabal new-run grafanix  # Run it
 ```bash
 cd frontend
 
-bower install  # Fetch dependencies
+bower install                              # Fetch dependencies
 pulp --watch build --to ../static/main.js  # Rebuild on every change
 ```

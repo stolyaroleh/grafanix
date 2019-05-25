@@ -6,12 +6,13 @@
 , base
 , bytestring
 , containers
-, dhall
 , errors
+, filepath
 , hashable
 , hspec
 , hspec-attoparsec
 , lrucaching
+, optparse-applicative
 , protolude
 , scotty
 , text
@@ -43,10 +44,11 @@ mkDerivation {
     base
     bytestring
     containers
-    dhall
     errors
+    filepath
     hashable
     lrucaching
+    optparse-applicative
     protolude
     scotty
     text

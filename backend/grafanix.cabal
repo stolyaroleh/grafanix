@@ -20,10 +20,10 @@ library grafanix-internal
                       , attoparsec
                       , bytestring
                       , containers
-                      , dhall
                       , errors
                       , hashable
                       , lrucaching
+                      , optparse-applicative
                       , protolude
                       , text
                       , typed-process
@@ -50,6 +50,7 @@ executable grafanix
   main-is:              Main.hs
 
   build-depends:        base
+                      , filepath
                       , grafanix-internal
                       , errors
                       , protolude
@@ -68,7 +69,6 @@ test-suite test
 
   build-depends:        base
                       , grafanix-internal
-                      , attoparsec
                       , text
                       , hspec
                       , hspec-attoparsec
