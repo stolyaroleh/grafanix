@@ -2,7 +2,9 @@
 , frontend
 , runCommand
 }:
-  runCommand "grafanix" {} ''
+  runCommand "grafanix" {
+    version = "0.1";
+  } ''
     mkdir -p $out/static
     pushd ${../static}
     cp index.html \

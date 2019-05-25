@@ -31,6 +31,10 @@ in
       backend = backend-static;
     };
 
+    grafanix-release = pkgs.callPackage ./nix/grafanix-release.nix {
+      grafanix = grafanix-static;
+    };
+
     buildTools = [
       hie
       pkgs.haskellPackages.cabal2nix
