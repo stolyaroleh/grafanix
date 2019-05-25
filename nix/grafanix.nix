@@ -1,5 +1,5 @@
-{ grafanix-backend
-, grafanix-frontend
+{ backend
+, frontend
 , runCommand
 }:
   runCommand "grafanix" {} ''
@@ -11,8 +11,8 @@
        d3.js      \
        $out/static
     popd
-    cp ${grafanix-frontend}/main.js $out/static
+    cp ${frontend}/main.js $out/static
 
     mkdir -p $out/bin
-    cp ${grafanix-backend}/bin/grafanix $out/bin/grafanix
+    cp ${backend}/bin/grafanix $out/bin/grafanix
   ''

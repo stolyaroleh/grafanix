@@ -34,6 +34,18 @@
         "description": "Easy PureScript (and other tools) with Nix",
         "rev": "bad807ade1314420a52c589dbc3d64d3c9b38480"
     },
+    "static-haskell-nix": {
+        "homepage": "",
+        "url": "https://github.com/nh2/static-haskell-nix/archive/b06f8979bfaa27dc4ce76cbeaa393e0c28b5baef.tar.gz",
+        "owner": "nh2",
+        "branch": "master",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "static-haskell-nix",
+        "type": "tarball",
+        "sha256": "17f4if6rx7xhsfz1n9i151n7zxf82p08nmyml24fb1axi9j6ya38",
+        "description": "easily build most Haskell programs into fully static Linux executables",
+        "rev": "b06f8979bfaa27dc4ce76cbeaa393e0c28b5baef"
+    },
     "niv": {
         "homepage": "https://github.com/nmattia/niv",
         "url": "https://github.com/nmattia/niv/archive/5d9e3a5f7d51765f0369a4682770ec57d863f19f.tar.gz",

@@ -19,6 +19,9 @@
 , typed-process
 , vector
 , wai-middleware-static
+
+, static ? false
+, zlib
 }:
 mkDerivation {
   pname = "grafanix-backend";
@@ -37,6 +40,12 @@ mkDerivation {
 
   isExecutable = true;
   enableSharedLibraries = false;
+  enableSharedExecutables = false;
+  configureFlags =
+    stdenv.lib.optionals static [
+      "--ghc-option=-optl=-static"
+      "--extra-lib-dirs=${zlib.static}/lib"
+    ];
 
   executableHaskellDepends = [
     aeson

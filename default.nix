@@ -1,37 +1,47 @@
-{ haskellCompiler ? "ghc864" }:
+{}:
 let
-  config = {
-    packageOverrides = pkgs: rec {
-      grafanix-backend =
-        pkgs.haskell.packages.${haskellCompiler}.callPackage ./nix/grafanix-backend.nix {};
-      grafanix-frontend = pkgs.callPackage ./nix/grafanix-frontend.nix {
-        purescript = easyPS.inputs.purs;
-      };
-      grafanix = pkgs.callPackage ./nix/grafanix.nix {};
-    };
-  };
-
   sources = import ./nix/sources.nix;
-  pkgs = import sources.nixpkgs { inherit config; };
+  pkgs = import sources.nixpkgs {};
+  static =
+    import (sources.static-haskell-nix + "/survey") {
+      integer-simple = true;
+    };
+  haskellCompiler = "ghc864";
+  staticHaskellPackages = static.haskellPackagesWithLibsReadyForStaticLinking;
   niv = (import sources.niv { inherit pkgs; }).niv;
   hie = (import sources.all-hies {}).versions."${haskellCompiler}";
   easyPS = import sources.easy-purescript-nix;
 in
   rec {
-    backend = pkgs.grafanix-backend;
-    frontend = pkgs.grafanix-frontend;
-    grafanix = pkgs.grafanix;
+    backend = pkgs.haskellPackages.callPackage ./nix/grafanix-backend.nix {};
+    backend-static = staticHaskellPackages.callPackage ./nix/grafanix-backend.nix {
+      static = true;
+      zlib = static.pkgs.zlib;
+    };
 
-    buildTools = with pkgs; [
+    frontend = pkgs.callPackage ./nix/grafanix-frontend.nix {
+      purescript = easyPS.inputs.purs;
+    };
+
+    grafanix = pkgs.callPackage ./nix/grafanix.nix {
+      inherit backend frontend;
+    };
+    grafanix-static = pkgs.callPackage ./nix/grafanix.nix {
+      inherit frontend;
+      backend = backend-static;
+    };
+
+    buildTools = [
       hie
-      haskellPackages.cabal2nix
-      haskellPackages.cabal-install
-      haskellPackages.hoogle
+      pkgs.haskellPackages.cabal2nix
+      pkgs.haskellPackages.cabal-install
+      pkgs.haskellPackages.hoogle
       niv
     ] ++ frontend.buildInputs;
 
-    shell =
+    shell = (
       pkgs.haskell.lib.addBuildTools
-      backend
-      buildTools;
+        backend
+        buildTools
+    ).env;
   }
