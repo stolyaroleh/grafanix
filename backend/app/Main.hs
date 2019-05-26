@@ -5,6 +5,7 @@ import           System.Environment (getExecutablePath)
 import           System.FilePath ((</>), takeDirectory)
 import           Protolude hiding (get)
 import           Web.Scotty
+import           Network.Wai.Middleware.Cors (simpleCors)
 import           Network.Wai.Middleware.Static (addBase, staticPolicy)
 import           Config
 import qualified Nix
@@ -33,6 +34,7 @@ runGrafanix config = do
   putStrLn $ "Serving static assets from " <> staticAssets
   scotty (port config)
     $ do
+      middleware simpleCors
       middleware $ staticPolicy (addBase staticAssets)
       get "/" $ file (staticAssets <> "/index.html")
       get "/deps/:packageName/"

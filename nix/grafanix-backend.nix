@@ -18,6 +18,7 @@
 , text
 , typed-process
 , vector
+, wai-cors
 , wai-middleware-static
 
 , static ? false
@@ -63,6 +64,7 @@ mkDerivation {
     text
     typed-process
     vector
+    wai-cors
     wai-middleware-static
   ];
   testHaskellDepends = [ base hspec hspec-attoparsec ];

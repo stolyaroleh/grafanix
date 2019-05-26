@@ -55,6 +55,7 @@ executable grafanix
                       , errors
                       , protolude
                       , scotty
+                      , wai-cors
                       , wai-middleware-static
 
   default-language:     Haskell2010
