@@ -76,13 +76,12 @@ data DepGraph = DepGraph
 emptyGraph :: DepGraph
 emptyGraph = DepGraph { nodes = Vector.empty, edges = Vector.empty }
 
-depsToJson :: DepGraph -> Map Int Info -> Map (Int, Int) (Vector Why)-> Value
+depsToJson :: DepGraph -> Map Int Info -> Map (Int, Int) (Vector Why) -> Value
 depsToJson graph infos whys =
-  let catMaybes = Vector.map fromJust . Vector.filter isJust
-  in  object
-        [ ("nodes", toJSON . catMaybes . Vector.imap mkNode $ nodes graph)
-        , ("links", toJSON . catMaybes . Vector.map mkLink $ edges graph)
-        ]
+  object
+    [ ("nodes", toJSON . Vector.imapMaybe mkNode $ nodes graph)
+    , ("links", toJSON . Vector.mapMaybe mkLink $ edges graph)
+    ]
  where
   mkNode :: Int -> Text -> Maybe Value
   mkNode n _ = do
