@@ -5,10 +5,8 @@ Visualize build and runtime dependencies of your Nix derivations!
 ## Building
 
 ```bash
-nix-build --attr grafanix --option build-use-sandbox false
+nix-build --attr grafanix
 ```
-
->Note: we disable Nix sandboxing to make it possible for Bower to fetch frontend dependencies.
 
 ## Running
 
@@ -27,7 +25,7 @@ I suggest using VSCode with the following plugins:
 
 - Haskell IDE Engine
 - HTML CSS Support
-- PureScript IDE
+- Elm Support
 
 Make sure you run it in a shell with all necessary tooling:
 
@@ -50,6 +48,5 @@ cabal new-run grafanix --static-path="../static"  # Run it, serve static assets 
 ```bash
 cd frontend
 
-bower install                              # Fetch dependencies
-pulp --watch build --to ../static/main.js  # Rebuild on every change
+./scripts/watch.sh # Rebuild on every change
 ```

@@ -1,20 +1,34 @@
-{ backend
+{ lib
+, d3
+, bootstrap
+, backend
 , frontend
-, runCommand
+, stdenvNoCC
 }:
-  runCommand "grafanix" {
-    version = "0.1";
-  } ''
+stdenvNoCC.mkDerivation {
+  name = "grafanix";
+  version = "0.2";
+
+  src = lib.sourceByRegex ../static [
+    "drawGraph.js"
+    "index.html"
+    "main.css"
+    "nix.png"
+  ];
+
+  phases = [
+    "unpackPhase"
+    "installPhase"
+  ];
+
+  installPhase = ''
     mkdir -p $out/static
-    pushd ${../static}
-    cp index.html \
-       main.css   \
-       parrot.gif \
-       d3.js      \
-       $out/static
-    popd
+    cp ${d3} $out/static/d3.js
+    cp ${bootstrap} $out/static/bootstrap.css
+    cp * $out/static
     cp ${frontend}/main.js $out/static
 
     mkdir -p $out/bin
     cp ${backend}/bin/grafanix $out/bin/grafanix
-  ''
+  '';
+}

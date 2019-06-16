@@ -22,18 +22,6 @@
         "description": "Cached Haskell IDE Engine Nix builds for all GHC versions",
         "rev": "777b6665c1671feaa3c3eb74d10dd6f79ec1302c"
     },
-    "easy-purescript-nix": {
-        "homepage": "",
-        "url": "https://github.com/justinwoo/easy-purescript-nix/archive/bad807ade1314420a52c589dbc3d64d3c9b38480.tar.gz",
-        "owner": "justinwoo",
-        "branch": "master",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
-        "repo": "easy-purescript-nix",
-        "type": "tarball",
-        "sha256": "099dpxrpch8cgy310svrpdcad2y1qdl6l782mjpcgn3rqgj62vsf",
-        "description": "Easy PureScript (and other tools) with Nix",
-        "rev": "bad807ade1314420a52c589dbc3d64d3c9b38480"
-    },
     "static-haskell-nix": {
         "homepage": "",
         "url": "https://github.com/nh2/static-haskell-nix/archive/b06f8979bfaa27dc4ce76cbeaa393e0c28b5baef.tar.gz",

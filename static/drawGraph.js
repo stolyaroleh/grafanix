@@ -34,13 +34,21 @@ function linkTitle(d) {
   );
 }
 
+function connectedness(edges) {
+  var numIncoming = {};
+  var numOutgoing = {};
+  edges.forEach(e => {
+    numIncoming[e.target] = (numIncoming[e.target] || 0) + 1;
+    numOutgoing[e.source] = (numOutgoing[e.source] || 0) + 1;
+  });
+  return [numIncoming, numOutgoing];
+}
 
-function drawGraph(divId) {
+function drawGraph(data) {
   // Nuke previous contents
-  var vis = d3.select("#" + divId);
+  var vis = d3.select("#vis");
   vis.selectAll("*").remove();
 
-  var data = window.sessionStorage.getItem("data");
   if (data === null) {
     return;
   }
@@ -55,7 +63,7 @@ function drawGraph(divId) {
     const width = 1000;
     const height = 1000;
     const svg = vis.append('svg')
-      .attr('viewBox', `${-width / 2} ${-height / 2} ${width} ${height}`)
+      .attr('viewBox', `${-width / 2} ${-height / 2} ${width} ${height}`);
 
     const zoomRect = svg
       .append('rect')
@@ -72,20 +80,42 @@ function drawGraph(divId) {
 
     const visParent = svg.append('g');
 
+    [incoming, outgoing] = connectedness(data.links);
     const totalSize = data.nodes.reduce((total, n) => total + n.size, 0);
     const radius = d3.scaleSqrt().domain([0, totalSize]).range([10, 50]);
+    const linkDistance = d3.scaleSqrt().clamp(true).domain([2, 10]).range([70, 200]);
+    const collideRadius = d3.scaleSqrt().clamp(true).domain([2, 10]).range([20, 70]);
 
     const color = d3
       .scaleOrdinal()
       .range(d3.quantize(d3.interpolateRainbow, data.nodes.length + 1));
 
     const simulation = d3.forceSimulation(data.nodes)
-      .force('charge', d3.forceManyBody().strength(-80))
+      .force(
+        'charge',
+        d3.forceManyBody()
+          .strength(-30)
+      )
+      .force('center', d3.forceCenter())
       .force(
         'link',
         d3.forceLink()
-          .distance(150)
+          .distance(link => {
+            numOutgoing = outgoing[link.source.index];
+            numIncoming = incoming[link.target.index];
+            return linkDistance(numOutgoing + numIncoming);
+          })
           .links(data.links)
+      )
+      .force(
+        'collide',
+        d3.forceCollide()
+          .radius(d => {
+            isRoot = d.sha == data.nodes[0].sha;
+            numIncoming = incoming[d.index];
+            numOutgoing = outgoing[d.index];
+            return collideRadius(numIncoming + numOutgoing);
+          })
       )
       .on('tick', ticked);
 

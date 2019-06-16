@@ -4,14 +4,32 @@
 <head>
     <title>Grafanix</title>
     <meta charset="utf-8" />
+
+    <link href="bootstrap.css" rel="stylesheet">
     <link href="main.css" rel="stylesheet">
-    <link rel="icon" href="parrot.gif" type="image/gif">
+
+    <link rel="icon" href="nix.png" type="image/png">
+
+    <script src="d3.js"></script>
+    <script src="drawGraph.js"></script>
+    <script src="main.js"></script>
 </head>
 
-<script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="d3.js"></script>
-<script src="main.js"></script>
-
-<body></body>
+<body>
+    <script>
+        var app = Elm.Main.init()
+        app.ports.drawGraph.subscribe(drawGraph);
+        app.ports.sessionSave.subscribe(
+            state => {
+                try { sessionStorage.setItem("state", state); }
+                catch { }
+            }
+        );
+        var prevSession = sessionStorage.getItem("state");
+        if (prevSession) {
+            app.ports.sessionRestore.send(prevSession);
+        }
+    </script>
+</body>
 
 </html>

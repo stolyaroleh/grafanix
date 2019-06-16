@@ -1,11 +1,19 @@
+# cabal (old an new build dirs)
 backend/dist
 backend/dist-newstyle
 backend/cabal.*
 backend/.ghc.environment.*
 
-frontend/.psci_modules
-frontend/.pulp-cache
-frontend/bower_components
-frontend/output
+# Elm stuff
+frontend/elm-stuff
 
-result
+# Thirdparty assets
+static/bootstrap.css
+static/d3.js
+
+# Compiled Elm code
+static/main.js
+
+# Nix symlinks
+**/result
+**/result-*
