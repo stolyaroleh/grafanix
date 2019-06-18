@@ -101,13 +101,13 @@ fetchGraph model =
         method =
             case model.closureType of
                 Runtime ->
-                    "deps/"
+                    "/deps/"
 
                 Build ->
-                    "build-deps/"
+                    "/build-deps/"
 
         url =
-            "http://localhost:3000/" ++ method ++ model.expr
+            method ++ model.expr
 
         maybeCancel tracker =
             case tracker of
