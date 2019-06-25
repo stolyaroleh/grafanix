@@ -96,7 +96,6 @@ function drawGraph(data) {
         d3.forceManyBody()
           .strength(-30)
       )
-      .force('center', d3.forceCenter())
       .force(
         'link',
         d3.forceLink()
