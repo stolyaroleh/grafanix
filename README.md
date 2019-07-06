@@ -1,23 +1,25 @@
 # Grafanix
 
-Visualize build and runtime dependencies of your Nix derivations!
+This tool can visualize build and runtime dependencies of Nix derivations.
+
+![](grafanix.png)
 
 ## Building
 
 ```bash
-nix-build --attr grafanix
+nix-build --attr grafanix --out-link grafanix
 ```
+
+If you don't want to wait, grab the latest [release](https://github.com/stolyaroleh/grafanix/releases).
 
 ## Running
 
 ```bash
-./result/bin/grafanix --help # show available options
-./result/bin/grafanix        # start Grafanix, use <nixpkgs>
+./grafanix/bin/grafanix --help # show available options
+./grafanix/bin/grafanix        # start Grafanix, use <nixpkgs>
 ```
 
-After starting Grafanix, open `localhost:3000` in your browser:
-
-![](grafanix.png)
+After starting Grafanix, open `localhost:3000` in your browser.
 
 ## Hacking
 
