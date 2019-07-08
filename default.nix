@@ -44,26 +44,30 @@ in
       grafanix = grafanix-static;
     };
 
-    shell = pkgs.mkShell {
-      inputsFrom = [
-        backend.env
-        frontend
-      ];
-      buildInputs = [
-        hie
-        pkgs.haskellPackages.cabal2nix
-        pkgs.haskellPackages.cabal-install
-        pkgs.haskellPackages.hoogle
-        pkgs.haskellPackages.ghcid
-        pkgs.haskellPackages.stack
-        niv
-      ];
-      shellHook = ''
+    shell = (
+      pkgs.haskell.lib.addBuildTools
+        backend
         (
-          cd ${builtins.toString ./static}
-          ln -snf ${bootstrap} bootstrap.css
-          ln -snf ${d3} d3.js
+          [
+            hie
+            pkgs.haskellPackages.cabal2nix
+            pkgs.haskellPackages.cabal-install
+            pkgs.haskellPackages.hoogle
+            pkgs.haskellPackages.ghcid
+            pkgs.haskellPackages.stack
+            niv
+          ] ++
+          frontend.buildInputs
         )
-      '';
-    };
+    ).env.overrideAttrs (
+      old: {
+        shellHook = ''
+          (
+            cd ${builtins.toString ./static}
+            ln -snf ${bootstrap} bootstrap.css
+            ln -snf ${d3} d3.js
+          )
+        '';
+      }
+    );
   }
