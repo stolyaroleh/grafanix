@@ -10,6 +10,7 @@ let
   staticHaskellPackages = static.haskellPackagesWithLibsReadyForStaticLinking;
   niv = (import sources.niv { inherit pkgs; }).niv;
   hie = (import sources.all-hies {}).versions."${haskellCompiler}";
+  websocat = (import sources.unstable {}).websocat;
 
   d3 = builtins.fetchurl {
     url = "https://d3js.org/d3.v5.min.js";
@@ -56,6 +57,7 @@ in
             pkgs.haskellPackages.ghcid
             pkgs.haskellPackages.stack
             niv
+            websocat
           ] ++
           frontend.buildInputs
         )

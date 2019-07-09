@@ -12,15 +12,26 @@
     },
     "all-hies": {
         "homepage": "",
-        "url": "https://github.com/Infinisil/all-hies/archive/777b6665c1671feaa3c3eb74d10dd6f79ec1302c.tar.gz",
+        "url": "https://github.com/Infinisil/all-hies/archive/b06fdd252c71404ace1eea5e09b562bcf7f834f7.tar.gz",
         "owner": "Infinisil",
         "branch": "master",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
         "repo": "all-hies",
         "type": "tarball",
-        "sha256": "03py0j4d6asrxmp1170n5sywsa2y1pw0xr51r2f1digfg5ryrw98",
+        "sha256": "1gzipcmhm6xbfjdjx3i4057vysmvrm6xykx9aplj3wcwmk3bhmdy",
         "description": "Cached Haskell IDE Engine Nix builds for all GHC versions",
-        "rev": "777b6665c1671feaa3c3eb74d10dd6f79ec1302c"
+        "rev": "b06fdd252c71404ace1eea5e09b562bcf7f834f7"
+    },
+    "unstable": {
+        "url": "https://github.com/NixOS/nixpkgs-channels/archive/beff2f8d75ef2c65017fb25e251337c6bb2e950d.tar.gz",
+        "owner": "NixOS",
+        "branch": "nixos-unstable",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz",
+        "repo": "nixpkgs-channels",
+        "type": "tarball",
+        "sha256": "1av1m2mibv9dgfrjv9r8n3ih9dyb0wi594s5xb4c135v121jpzs3",
+        "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
+        "rev": "beff2f8d75ef2c65017fb25e251337c6bb2e950d"
     },
     "static-haskell-nix": {
         "homepage": "",
