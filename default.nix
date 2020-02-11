@@ -12,15 +12,9 @@ let
   hie = (import sources.all-hies {}).versions."${haskellCompiler}";
   websocat = (import sources.unstable {}).websocat;
 
-  d3 = builtins.fetchurl {
-    url = "https://d3js.org/d3.v5.min.js";
-    sha256 = "17fv5amzrkg3l762p7npjhg78nz30ir2yz7ps7h6d3yc3dk75m4k";
-  };
+  d3 = sources.d3;
 
-  bootstrap = builtins.fetchurl {
-    url = "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css";
-    sha256 = "0dldiln2s3z8iqc5ccjid2i5gh9527naas064bwly8x9lrfrxcb0";
-  };
+  bootstrap = sources.bootstrap;
 in
   rec {
     backend = pkgs.haskellPackages.callPackage ./nix/grafanix-backend.nix {};
