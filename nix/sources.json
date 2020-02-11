@@ -56,5 +56,19 @@
         "sha256": "0x7d2rb89h0h7g8sjsgax6ncvf2wwbmxkgvlfi53d00kxj6kfzba",
         "description": "Easy dependency management for Nix projects",
         "rev": "5d9e3a5f7d51765f0369a4682770ec57d863f19f"
+    },
+    "bootstrap": {
+        "sha256": "0dldiln2s3z8iqc5ccjid2i5gh9527naas064bwly8x9lrfrxcb0",
+        "type": "file",
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css",
+        "url_template": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/<version>/css/bootstrap.min.css",
+        "version": "4.3.1"
+    },
+    "d3": {
+        "sha256": "0mjblqriz0k8v9034sra5pz10ql3x8ysaril24if6w2pq0i2ci4v",
+        "type": "file",
+        "url": "https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js",
+        "url_template": "https://cdnjs.cloudflare.com/ajax/libs/d3/<version>/d3.min.js",
+        "version": "5.15.0"
     }
 }
