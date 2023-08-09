@@ -22,7 +22,7 @@ library grafanix-internal
                       , containers
                       , errors
                       , hashable
-                      , lrucaching
+                      , lrucache
                       , optparse-applicative
                       , protolude
                       , text

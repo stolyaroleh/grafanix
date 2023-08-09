@@ -1,6 +1,6 @@
 module Config (Config(..), StaticAssetLocation(..), devConfig, readConfig) where
 
-import           Data.String (IsString, fromString)
+import           Data.String (fromString)
 import           Options.Applicative
 import           Protolude hiding (option)
 
@@ -13,8 +13,8 @@ instance IsString StaticAssetLocation where
 
 data Config = Config { nixpkgsPath :: Text
                      , staticPath :: StaticAssetLocation
-                     , duCacheSize :: Int
-                     , whyCacheSize :: Int
+                     , duCacheSize :: Integer
+                     , whyCacheSize :: Integer
                      , port :: Int
                      }
   deriving (Show)

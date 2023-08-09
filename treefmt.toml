@@ -1,0 +1,12 @@
+[formatter.elm]
+command = "elm-format"
+options = ["--yes"]
+includes = ["*.elm"]
+
+[formatter.haskell]
+command = "ormolu"
+includes = ["*.hs"]
+
+[formatter.nix]
+command = "nixpkgs-fmt"
+includes = ["*.nix"]

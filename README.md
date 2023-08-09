@@ -25,7 +25,7 @@ After starting Grafanix, open `localhost:3000` in your browser.
 
 I suggest using VSCode with the following plugins:
 
-- Haskell IDE Engine
+- ghcide
 - HTML CSS Support
 - Elm Support
 
@@ -51,4 +51,10 @@ cabal new-run grafanix --static-path="../static"  # Run it, serve static assets 
 cd frontend
 
 ./scripts/watch.sh # Rebuild on every change
+```
+
+### Formatting
+
+```bash
+treefmt
 ```

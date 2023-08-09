@@ -22,6 +22,9 @@ main = do
         it "works on glibc" $
           nixPath `shouldSucceedOn`
           ("/nix/store/2kcrj1ksd2a14bm5sky182fv2xwfhfap-glibc-2.26-131" :: Text)
+        it "works without /nix/store" $
+          nixPath `shouldSucceedOn`
+          ("2kcrj1ksd2a14bm5sky182fv2xwfhfap-glibc-2.26-131" :: Text)
         it "fails on illegal characters" $
           nixPath `shouldFailOn`
           ("/nix/store/2kcrj\"ksd2a14bm5sky182fv2xwfhfap-glibc-2.26-131" :: Text)

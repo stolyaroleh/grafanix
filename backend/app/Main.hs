@@ -1,6 +1,6 @@
 module Main where
 
-import           Control.Error (Script, runExceptT)
+import           Control.Error (Script)
 import           System.Environment (getExecutablePath)
 import           System.FilePath ((</>), takeDirectory)
 import           Protolude hiding (get)

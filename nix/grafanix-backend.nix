@@ -1,5 +1,5 @@
 { mkDerivation
-, stdenv
+, lib
 
 , aeson
 , attoparsec
@@ -11,7 +11,7 @@
 , hashable
 , hspec
 , hspec-attoparsec
-, lrucaching
+, lrucache
 , optparse-applicative
 , protolude
 , scotty
@@ -22,12 +22,13 @@
 , wai-middleware-static
 
 , static ? false
-, zlib
+, ncurses ? null
+, zlib ? null
 }:
 mkDerivation {
   pname = "grafanix-backend";
   version = "0.1.0.0";
-  src = stdenv.lib.sourceByRegex ../backend [
+  src = lib.sourceByRegex ../backend [
     "app"
     "app/.*\.hs"
     "src"
@@ -43,9 +44,9 @@ mkDerivation {
   enableSharedLibraries = false;
   enableSharedExecutables = false;
   configureFlags =
-    stdenv.lib.optionals static [
+    lib.optionals static [
       "--ghc-option=-optl=-static"
-      "--extra-lib-dirs=${zlib.static}/lib"
+      "--extra-lib-dirs=${zlib.static}/lib:${ncurses}/lib"
     ];
 
   executableHaskellDepends = [
@@ -57,7 +58,7 @@ mkDerivation {
     errors
     filepath
     hashable
-    lrucaching
+    lrucache
     optparse-applicative
     protolude
     scotty
@@ -68,5 +69,5 @@ mkDerivation {
     wai-middleware-static
   ];
   testHaskellDepends = [ base hspec hspec-attoparsec ];
-  license = stdenv.lib.licenses.mit;
+  license = lib.licenses.mit;
 }

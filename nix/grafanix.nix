@@ -7,7 +7,7 @@
 }:
 stdenvNoCC.mkDerivation {
   name = "grafanix";
-  version = "0.2";
+  version = "0.3";
 
   src = lib.sourceByRegex ../static [
     "drawGraph.js"

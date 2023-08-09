@@ -1,51 +1,26 @@
 {
-    "all-hies": {
-        "branch": "master",
-        "description": "Cached Haskell IDE Engine Nix builds for all GHC versions",
-        "homepage": "",
-        "owner": "Infinisil",
-        "repo": "all-hies",
-        "rev": "b06fdd252c71404ace1eea5e09b562bcf7f834f7",
-        "sha256": "1gzipcmhm6xbfjdjx3i4057vysmvrm6xykx9aplj3wcwmk3bhmdy",
-        "type": "tarball",
-        "url": "https://github.com/Infinisil/all-hies/archive/b06fdd252c71404ace1eea5e09b562bcf7f834f7.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "bootstrap": {
-        "sha256": "0dldiln2s3z8iqc5ccjid2i5gh9527naas064bwly8x9lrfrxcb0",
-        "type": "file",
-        "url": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css",
-        "url_template": "https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/<version>/css/bootstrap.min.css",
-        "version": "4.3.1"
-    },
-    "d3": {
-        "sha256": "0mjblqriz0k8v9034sra5pz10ql3x8ysaril24if6w2pq0i2ci4v",
-        "type": "file",
-        "url": "https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js",
-        "url_template": "https://cdnjs.cloudflare.com/ajax/libs/d3/<version>/d3.min.js",
-        "version": "5.15.0"
-    },
     "niv": {
         "branch": "master",
         "description": "Easy dependency management for Nix projects",
         "homepage": "https://github.com/nmattia/niv",
         "owner": "nmattia",
         "repo": "niv",
-        "rev": "2ecfd86b631714b457e56d70dd83fa60435baeb6",
-        "sha256": "01j6727cws8blg1npp54b4w6xa0gpgyzhyws2vqgp8clnlnmqqhi",
+        "rev": "914aba08a26cb10538b84d00d6cfb01c9776d80c",
+        "sha256": "0gx316gc7prjay5b0cr13x4zc2pdbiwxkfkpjvrlb2rml80lm4pm",
         "type": "tarball",
-        "url": "https://github.com/nmattia/niv/archive/2ecfd86b631714b457e56d70dd83fa60435baeb6.tar.gz",
+        "url": "https://github.com/nmattia/niv/archive/914aba08a26cb10538b84d00d6cfb01c9776d80c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs": {
-        "branch": "nixos-19.03",
+        "branch": "23.05",
         "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
+        "homepage": "https://github.com/NixOS/nixpkgs",
         "owner": "NixOS",
-        "repo": "nixpkgs-channels",
-        "rev": "7bb74e653654dbf9206e751574b5132b15f46bb5",
-        "sha256": "1dbdy4f58yqz4l67n032184rx7ci94hx3wl52c8h2bg06awkzq87",
+        "repo": "nixpkgs",
+        "rev": "4ecab3273592f27479a583fb6d975d4aba3486fe",
+        "sha256": "10wn0l08j9lgqcw8177nh2ljrnxdrpri7bp0g7nvrsn9rkawvlbf",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs-channels/archive/7bb74e653654dbf9206e751574b5132b15f46bb5.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/4ecab3273592f27479a583fb6d975d4aba3486fe.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "static-haskell-nix": {
@@ -54,21 +29,10 @@
         "homepage": "",
         "owner": "nh2",
         "repo": "static-haskell-nix",
-        "rev": "b06f8979bfaa27dc4ce76cbeaa393e0c28b5baef",
-        "sha256": "17f4if6rx7xhsfz1n9i151n7zxf82p08nmyml24fb1axi9j6ya38",
+        "rev": "88f1e2d57e3f4cd6d980eb3d8f99d5e60040ad54",
+        "sha256": "1hf1470r9axjzjjnl9k21drvwx7wfcalpj3k578yb3qz5j1lh5nk",
         "type": "tarball",
-        "url": "https://github.com/nh2/static-haskell-nix/archive/b06f8979bfaa27dc4ce76cbeaa393e0c28b5baef.tar.gz",
-        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
-    },
-    "unstable": {
-        "branch": "nixos-unstable",
-        "description": "Nixpkgs/NixOS branches that track the Nixpkgs/NixOS channels",
-        "owner": "NixOS",
-        "repo": "nixpkgs-channels",
-        "rev": "beff2f8d75ef2c65017fb25e251337c6bb2e950d",
-        "sha256": "1av1m2mibv9dgfrjv9r8n3ih9dyb0wi594s5xb4c135v121jpzs3",
-        "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs-channels/archive/beff2f8d75ef2c65017fb25e251337c6bb2e950d.tar.gz",
+        "url": "https://github.com/nh2/static-haskell-nix/archive/88f1e2d57e3f4cd6d980eb3d8f99d5e60040ad54.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
